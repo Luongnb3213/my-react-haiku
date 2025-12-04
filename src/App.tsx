@@ -1,21 +1,21 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import './App.css';
 import { useHover } from './lib/hooks';
+import { useClickOutside } from './lib/hooks/useClickOutside';
 
 function App() {
-  const { ref, isHovered } = useHover<HTMLDivElement>();
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+
+  const handleClickOutside = () => setCount(count + 1);
+
+  useClickOutside(ref, handleClickOutside);
 
   return (
-    <div
-      style={{
-        width: 300,
-        height: 300,
-        backgroundColor: isHovered ? 'lightblue' : 'lightgray',
-      }}
-      ref={ref}
-    >
-      {isHovered ? 'Hovered' : 'Not hovered'}
-    </div>
+    <>
+      <b>Clicked Outside {count} Times!</b>
+      <button ref={ref}>Click Outside Of Me!</button>
+    </>
   );
 }
 
