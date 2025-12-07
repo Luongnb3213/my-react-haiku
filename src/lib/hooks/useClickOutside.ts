@@ -1,30 +1,83 @@
 import React from 'react';
 
-type ClickOutsideHandler = (event: MouseEvent | TouchEvent) => void;
+export type ClickOutsideEvent = MouseEvent | TouchEvent;
+
+export type ClickOutsideHandler = (event: ClickOutsideEvent) => void;
+
+type MaybeRefElement = HTMLElement | null | undefined | React.RefObject<HTMLElement | null>;
+
+export type UseClickOutsideOptions = {
+  enabled?: boolean;
+  events?: Array<'mousedown' | 'mouseup' | 'click' | 'touchstart' | 'pointerdown'>;
+  ignore?: MaybeRefElement[];
+  capture?: boolean;
+};
 
 export function useClickOutside(
-  ref: React.RefObject<HTMLElement | null>,
+  target: React.RefObject<HTMLElement | null> | Array<React.RefObject<HTMLElement | null>>,
   handler: ClickOutsideHandler,
-  enabled: boolean = true,
+  options: UseClickOutsideOptions = {},
 ) {
   React.useEffect(() => {
     if (typeof document === 'undefined') return;
+
+    const {
+      enabled = true,
+      events = ['mousedown', 'touchstart'],
+      ignore = [],
+      capture = false,
+    } = options;
+
     if (!enabled) return;
 
-    const listener = (event: MouseEvent | TouchEvent) => {
-      const el = ref.current;
-      if (!el || el.contains(event.target as Node)) {
+    // Chuẩn hoá target refs thành array
+    const targetRefs = Array.isArray(target) ? target : [target];
+
+    const resolveElement = (maybe: MaybeRefElement): HTMLElement | null => {
+      if (!maybe) return null;
+      if (Object.prototype.hasOwnProperty.call(maybe, 'current')) {
+        return (maybe as React.RefObject<HTMLElement | null>).current;
+      }
+      return maybe as HTMLElement;
+    };
+
+    const getTargetElements = (): HTMLElement[] =>
+      targetRefs.map(ref => ref.current).filter((el): el is HTMLElement => Boolean(el));
+
+    const getIgnoreElements = (): HTMLElement[] =>
+      ignore.map(item => resolveElement(item)).filter((el): el is HTMLElement => Boolean(el));
+
+    const listener = (event: ClickOutsideEvent) => {
+      const eventTarget = event.target as Node | null;
+      if (!eventTarget) return;
+
+      const targets = getTargetElements();
+      if (!targets.length) return;
+
+      // Click bên trong bất kỳ target nào -> bỏ qua
+      if (targets.some(el => el.contains(eventTarget))) {
         return;
       }
+
+      const ignored = getIgnoreElements();
+      // Click trong vùng ignore -> bỏ qua
+      if (ignored.some(el => el.contains(eventTarget))) {
+        return;
+      }
+
       handler(event);
     };
 
-    document.addEventListener('mousedown', listener);
-    document.addEventListener('touchstart', listener);
+    const uniqueEvents = Array.from(new Set(events));
+
+    uniqueEvents.forEach(eventName => {
+      document.addEventListener(eventName, listener, capture);
+    });
 
     return () => {
-      document.removeEventListener('mousedown', listener);
-      document.removeEventListener('touchstart', listener);
+      uniqueEvents.forEach(eventName => {
+        document.removeEventListener(eventName, listener, capture);
+      });
     };
-  }, [ref, handler, enabled]);
+  }, [target, handler, options]);
 }
