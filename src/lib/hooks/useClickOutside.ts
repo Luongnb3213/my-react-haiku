@@ -30,7 +30,6 @@ export function useClickOutside(
 
     if (!enabled) return;
 
-    // Chuẩn hoá target refs thành array
     const targetRefs = Array.isArray(target) ? target : [target];
 
     const resolveElement = (maybe: MaybeRefElement): HTMLElement | null => {
@@ -54,13 +53,11 @@ export function useClickOutside(
       const targets = getTargetElements();
       if (!targets.length) return;
 
-      // Click bên trong bất kỳ target nào -> bỏ qua
       if (targets.some(el => el.contains(eventTarget))) {
         return;
       }
 
       const ignored = getIgnoreElements();
-      // Click trong vùng ignore -> bỏ qua
       if (ignored.some(el => el.contains(eventTarget))) {
         return;
       }
