@@ -3,23 +3,30 @@ import './App.css';
 import { useHover } from './lib/hooks';
 import { useClickOutside } from './lib/hooks/useClickOutside';
 import { useToggle } from './lib/hooks/useToggle';
+import { useEventListener } from './lib/hooks/useEventListener';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
+  const [countWindow, setCountWindow] = useState(0);
+  const [countRef, setCountRef] = useState(0);
 
-  const handleClickOutside = () => setCount(count + 1);
+  // Button Ref
+  const buttonRef = useRef(null);
 
-  useClickOutside(ref, handleClickOutside);
+  // Event Handlers
+  const countW = () => setCountWindow(countWindow + 1);
+  const countR = () => setCountRef(countRef + 1);
 
-  const [theme, toggleTheme] = useToggle('dark', ['dark', 'light']);
+  // Example 1: Window Event
+  useEventListener('resize', countW, window);
+
+  // Example 2: Element Event
+  useEventListener('click', countR, buttonRef);
 
   return (
     <>
-      <b>Current {theme} Theme</b>
-      <button onClick={toggleTheme} ref={ref}>
-        Click to change theme!
-      </button>
+      <b>Window Event Triggered {countWindow} Times!</b>
+      <b>Ref Event Triggered {countRef} Times!</b>
+      <button ref={buttonRef}>Click Me</button>
     </>
   );
 }
