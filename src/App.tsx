@@ -4,31 +4,17 @@ import { useHover } from './lib/hooks';
 import { useClickOutside } from './lib/hooks/useClickOutside';
 import { useToggle } from './lib/hooks/useToggle';
 import { useEventListener } from './lib/hooks/useEventListener';
+import { useMousePosition } from './lib/hooks/useMousePosition';
 
 function App() {
-  const [countWindow, setCountWindow] = useState(0);
-  const [countRef, setCountRef] = useState(0);
+     const { x, y } = useMousePosition();
 
-  // Button Ref
-  const buttonRef = useRef(null);
-
-  // Event Handlers
-  const countW = () => setCountWindow(countWindow + 1);
-  const countR = () => setCountRef(countRef + 1);
-
-  // Example 1: Window Event
-  useEventListener('resize', countW, window);
-
-  // Example 2: Element Event
-  useEventListener('click', countR, buttonRef);
-
-  return (
-    <>
-      <b>Window Event Triggered {countWindow} Times!</b>
-      <b>Ref Event Triggered {countRef} Times!</b>
-      <button ref={buttonRef}>Click Me</button>
-    </>
-  );
+    return (
+      <div>
+        <b>Hover This Container</b>
+        <p>{`X: ${x} | Y: ${y}`}</p>
+      </div>
+    );
 }
 
 export default App;
