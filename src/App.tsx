@@ -5,16 +5,23 @@ import { useClickOutside } from './lib/hooks/useClickOutside';
 import { useToggle } from './lib/hooks/useToggle';
 import { useEventListener } from './lib/hooks/useEventListener';
 import { useMousePosition } from './lib/hooks/useMousePosition';
+import { useWindowSize } from './lib/hooks/useWindowSize';
 
 function App() {
-     const { x, y } = useMousePosition();
+  const { height, width } = useWindowSize({ enabled: true, throttleMs: 200 });
 
-    return (
-      <div>
-        <b>Hover This Container</b>
-        <p>{`X: ${x} | Y: ${y}`}</p>
-      </div>
-    );
+  return (
+    <div>
+      <b>Resize Your Window!</b>
+
+      <p>
+        Window Height: <span>{height}</span>
+      </p>
+      <p>
+        Window Width: <span>{width}</span>
+      </p>
+    </div>
+  );
 }
 
 export default App;
