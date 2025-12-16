@@ -6,20 +6,15 @@ import { useToggle } from './lib/hooks/useToggle';
 import { useEventListener } from './lib/hooks/useEventListener';
 import { useMousePosition } from './lib/hooks/useMousePosition';
 import { useWindowSize } from './lib/hooks/useWindowSize';
+import { useBatteryStatus } from './lib/hooks/useBatteryStatus';
 
 function App() {
-  const { height, width } = useWindowSize({ enabled: true, throttleMs: 200 });
-
+  const { level, isCharging } = useBatteryStatus();
+  
   return (
     <div>
-      <b>Resize Your Window!</b>
-
-      <p>
-        Window Height: <span>{height}</span>
-      </p>
-      <p>
-        Window Width: <span>{width}</span>
-      </p>
+      <p>Battery Level: {level}</p>
+      <p>Is Battery Charging: {isCharging ? 'True' : 'False'}</p>
     </div>
   );
 }
