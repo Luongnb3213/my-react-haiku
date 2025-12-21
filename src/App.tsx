@@ -8,17 +8,14 @@ import { useMousePosition } from './lib/hooks/useMousePosition';
 import { useWindowSize } from './lib/hooks/useWindowSize';
 import { useBatteryStatus } from './lib/hooks/useBatteryStatus';
 import { useConfirmExit } from './lib/hooks/useConfirmExit';
+import { useFirstRender } from './lib/hooks/useFirstRender';
 
 function App() {
-  const [dirty, toggleDirty] = useToggle(false, [true, false]);
-
-  useConfirmExit({ enabled: dirty });
+  const isFirst = useFirstRender();
 
   return (
     <>
-      <b>Try to close this tab with the window dirty!</b>
-      <p>Dirty: {`${dirty}`}</p>
-      <button onClick={() => toggleDirty()}>{dirty ? 'Set Clean' : 'Set Dirty'}</button>
+      <b>First Render? - {isFirst ? 'Yes' : 'No'}</b>
     </>
   );
 }
