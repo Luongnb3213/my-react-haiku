@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { useHover } from './lib/hooks';
 import { useClickOutside } from './lib/hooks/useClickOutside';
@@ -10,16 +10,28 @@ import { useBatteryStatus } from './lib/hooks/useBatteryStatus';
 import { useConfirmExit } from './lib/hooks/useConfirmExit';
 import { useFirstRender } from './lib/hooks/useFirstRender';
 import { useFavicon } from './lib/hooks/useFavicon';
+import { useFullscreen } from './lib/hooks/useFullscreen';
 
 function App() {
-  useFavicon(
-    'https://tse4.mm.bing.net/th/id/OIP.YR5gTV6Eg9527yQXAIvO3AAAAA?cb=ucfimg2&ucfimg=1&utm_source=chatgpt.com&w=300&h=240&c=7&p=0',
-    {
-      rel: 'icon',
-      type: 'image/png',
-    },
+  const { isFullscreen, toggle } = useFullscreen();
+  const element = useRef<HTMLDivElement>(null);
+  return (
+    <div>
+      <b>Is in Fullscreen Mode: {isFullscreen ? 'True' : 'False'}</b>
+      <button onClick={() => toggle(element.current)}>Toggle Fullscreen!</button>
+      <div
+        ref={element}
+        style={{
+          marginTop: '20px',
+          padding: '10px',
+          border: '1px solid black',
+          backgroundColor: '#f0f0f0',
+        }}
+      >
+        <h2>This is the element to be made fullscreen</h2>
+      </div>
+    </div>
   );
-  return <button>Click me</button>;
 }
 
 export default App;
