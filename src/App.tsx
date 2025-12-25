@@ -11,26 +11,28 @@ import { useConfirmExit } from './lib/hooks/useConfirmExit';
 import { useFirstRender } from './lib/hooks/useFirstRender';
 import { useFavicon } from './lib/hooks/useFavicon';
 import { useFullscreen } from './lib/hooks/useFullscreen';
+import { useInterval } from './lib/hooks/useInterval';
 
 function App() {
-  const { isFullscreen, toggle } = useFullscreen();
-  const element = useRef<HTMLDivElement>(null);
+  const [count, setCount] = useState(0);
+  const { start, stop } = useInterval(() => {
+    setCount(c => c + 1);
+  }, 1000);
+
+  const handleRestart = () => {
+    stop();
+    setTimeout(() => {
+      setCount(0);
+      start(1000);
+    }, 50);
+  };
+
   return (
-    <div>
-      <b>Is in Fullscreen Mode: {isFullscreen ? 'True' : 'False'}</b>
-      <button onClick={() => toggle(element.current)}>Toggle Fullscreen!</button>
-      <div
-        ref={element}
-        style={{
-          marginTop: '20px',
-          padding: '10px',
-          border: '1px solid black',
-          backgroundColor: '#f0f0f0',
-        }}
-      >
-        <h2>This is the element to be made fullscreen</h2>
-      </div>
-    </div>
+    <>
+      <p>Count: {count}</p>
+      <button onClick={stop}>Stop Counter</button>
+      <button onClick={() => handleRestart()}>Restart Counter</button>
+    </>
   );
 }
 
